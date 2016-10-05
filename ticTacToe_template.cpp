@@ -18,7 +18,13 @@ bool checkDiagonalLines(char (&array)[3][3], char sign);
 void takeFirstAvailable(char (&array)[3][3]);
 void nonPotentialMove(char (&array)[3][3]);
 bool checkRows(char (&array)[3][3], char sign);
+bool checkColumns(char (&array)[3][3], char sign);
 bool checkDiagonalLines(char (&array)[3][3], char sign);
+
+
+/* For X move-making */
+void insertX(char (&TTTarray)[3][3]);
+
 /* 1. Check if there's a winnable path
  * 2. Check if I can prevent against a winning opponent path
  * 3. Check if I can set up a winning path for the next move
@@ -30,7 +36,6 @@ bool checkForTwoO(char (&TTTarray)[3][3]);
 bool checkForOneX(char (&TTTarray)[3][3]);
 bool checkForEmpty(char (&TTTarray)[3][3]);
 
-
 /*
  * General functions for scanning through the Tic-Tac-Toe board.
  * target refers to either 'X' or 'O'
@@ -39,47 +44,12 @@ bool checkForEmpty(char (&TTTarray)[3][3]);
 bool scanVertical(char (&TTTarray)[3][3], char target, int num);
 bool scanHorizontal(char (&TTTarray)[3][3], char target, int num);
 bool scanDiagonal(char (&TTTarray)[3][3], char target, int num);
-
-
-/* For move-making */
-void insertX(char (&TTTarray)[3][3]);
-bool checkColumns(char (&array)[3][3], char sign);
-
-/*
- * General functions for scanning through the Tic-Tac-Toe board.
- * target refers to either 'X' or 'O'
- * num refers to the number of targets we are looking for
- */
-bool scanVertical(char (&TTTarray)[3][3], char target, int num);
-bool scanHorizontal(char (&TTTarray)[3][3], char target, int num);
-bool scanDiagonal(char (&TTTarray)[3][3], char target, int num);
-
-
-/* For move-making */
-void insertX(char (&TTTarray)[3][3]);
 
 int main( ){
 
     char TTTarray[3][3] = { {'-','-','-'},
                             {'-','-','-'},
                             {'-','-','-'}};
-
-    //char TTTarray[3][3] = { {'-','X','-'},
-    //                        {'-','X','-'},
-    //                        {'-','-','O'}};
-
-    //char TTTarray[3][3] = { {'-','-','-'},
-    //                        {'-','X','-'},
-    //                        {'-','O','-'}};
-
-    //char TTTarray[3][3] = { {'X','-','X'},
-    //                        {'-','-','-'},
-    //                        {'O','-','-'}};
-
-    //char TTTarray[3][3] = { {'X','-','X'},
-    //                        {'O','X','-'},
-    //                        {'O','-','O'}};
-
 
     for(int i =0;i<8;i++)
     {
