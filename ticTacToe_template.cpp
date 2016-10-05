@@ -9,15 +9,54 @@
 using namespace std;
 
 void printTTT(char (&array)[3][3]);
-void insertX(char (&array)[3][3]);
 void insertO(char (&array)[3][3]);
-void checkForWin(/*PASS BY REFERENCE*/); // IGNORE THIS FOR NOW
+bool checkForWin(char (&array)[3][3]);
 bool isFirstMoveForO(char (&array)[3][3]);
 bool checkForTwo(char (&array)[3][3], char sign);
 bool checkRowsAndColumns(char (&array)[3][3], char sign);
 bool checkDiagonalLines(char (&array)[3][3], char sign);
 void takeFirstAvailable(char (&array)[3][3]);
 void nonPotentialMove(char (&array)[3][3]);
+bool checkRows(char (&array)[3][3], char sign);
+bool checkDiagonalLines(char (&array)[3][3], char sign);
+/* 1. Check if there's a winnable path
+ * 2. Check if I can prevent against a winning opponent path
+ * 3. Check if I can set up a winning path for the next move
+ * 4. Default to anywhere in an empty path
+ * (For 3. & 4., give preference to corners)
+ */
+bool checkForTwoX(char (&TTTarray)[3][3]);
+bool checkForTwoO(char (&TTTarray)[3][3]);
+bool checkForOneX(char (&TTTarray)[3][3]);
+bool checkForEmpty(char (&TTTarray)[3][3]);
+
+
+/*
+ * General functions for scanning through the Tic-Tac-Toe board.
+ * target refers to either 'X' or 'O'
+ * num refers to the number of targets we are looking for
+ */
+bool scanVertical(char (&TTTarray)[3][3], char target, int num);
+bool scanHorizontal(char (&TTTarray)[3][3], char target, int num);
+bool scanDiagonal(char (&TTTarray)[3][3], char target, int num);
+
+
+/* For move-making */
+void insertX(char (&TTTarray)[3][3]);
+bool checkColumns(char (&array)[3][3], char sign);
+
+/*
+ * General functions for scanning through the Tic-Tac-Toe board.
+ * target refers to either 'X' or 'O'
+ * num refers to the number of targets we are looking for
+ */
+bool scanVertical(char (&TTTarray)[3][3], char target, int num);
+bool scanHorizontal(char (&TTTarray)[3][3], char target, int num);
+bool scanDiagonal(char (&TTTarray)[3][3], char target, int num);
+
+
+/* For move-making */
+void insertX(char (&TTTarray)[3][3]);
 
 int main( ){
 
@@ -72,14 +111,6 @@ void printTTT(char (&array)[3][3])
 		}
 		cout<<endl;
 	}
-}
-
-void insertX(char (&array)[3][3])
-{
-	int i,j;
-	cout<<"Enter i, then j\n";
-	cin>>i>>j;
-	array[i][j] = 'X';
 }
 
 //Insert an O character to the board according to the algorithm
@@ -174,7 +205,7 @@ void nonPotentialMove(char (&array)[3][3])
 bool checkForTwo(char (&array)[3][3], char sign)
 {
 	
-	if(checkRowsAndColumns(array, sign) || checkDiagonalLines(array, sign) )
+	if(checkRows(array, sign) || checkColumns(array, sign) || checkDiagonalLines(array, sign) )
 	{
 		return true;
 	}
@@ -185,8 +216,8 @@ bool checkForTwo(char (&array)[3][3], char sign)
 	
 }
 
-//Check if any row or column has 2 of either X or  and then make move accordingly return true if there's.
-bool checkRowsAndColumns(char (&array)[3][3], char sign)
+//Check if any row has 2 of either X or  and then make move accordingly return true if there's.
+bool checkRows(char (&array)[3][3], char sign)
 {
 	//Check for rows 
 	for(int i=0; i < 3;i++)
@@ -213,7 +244,12 @@ bool checkRowsAndColumns(char (&array)[3][3], char sign)
 			return true;
 		}
 	}
-	
+	return false;
+}
+
+//Check if any column has 2 of either X or  and then make move accordingly return true if there's.
+bool checkColumns(char (&array)[3][3], char sign)
+{
 	//Check for columns
 	for(int j=0; j < 3;j++)
 	{
@@ -305,4 +341,248 @@ void takeFirstAvailable(char (&array)[3][3])
 			}
 		}
 	}
+}
+
+// Return to main as soon as we hit a met criteria
+void insertX(char (&TTTarray)[3][3]) {
+    if (checkForTwoX(TTTarray)) return;
+    if (checkForTwoO(TTTarray)) return;
+    if (checkForOneX(TTTarray)) return;
+    if (checkForEmpty(TTTarray)) return;
+    return;
+}
+
+// For checking own winning path
+bool checkForTwoX(char (&TTTarray)[3][3]) {
+    if (scanVertical(TTTarray, 'X', 2)) return true;
+    if (scanHorizontal(TTTarray, 'X', 2)) return true;
+    if (scanDiagonal(TTTarray, 'X', 2)) return true;
+    return false;
+}
+
+// For defending opponent winning path
+bool checkForTwoO(char (&TTTarray)[3][3]) {
+    if (scanVertical(TTTarray, 'O', 2)) return true;
+    if (scanHorizontal(TTTarray, 'O', 2)) return true;
+    if (scanDiagonal(TTTarray, 'O', 2)) return true;
+    return false;
+}
+
+// For adding to path with one X and zero O's
+bool checkForOneX(char (&TTTarray)[3][3]) {
+    if (scanVertical(TTTarray, 'X', 1)) return true;
+    if (scanHorizontal(TTTarray, 'X', 1)) return true;
+    if (scanDiagonal(TTTarray, 'X', 1)) return true;
+    return false;
+}
+
+// For adding to an empty path
+bool checkForEmpty(char (&TTTarray)[3][3]) {
+    if (scanVertical(TTTarray, 'X', 0)) return true;
+    if (scanHorizontal(TTTarray, 'X', 0)) return true;
+    if (scanDiagonal(TTTarray, 'X', 0)) return true;
+    return false;
+}
+
+bool scanVertical(char (&TTTarray)[3][3], char target, int num) {
+    int count = 0,  // Counts occurences of the target letter
+        countO = 0; // Always counts O's
+    
+    /*
+     * For each column, count the occurences of the target letter.
+     * If this count reaches our EXACT target frequency, place the 
+     * next letter inside the open space in that path.
+     */
+    for (int column = 0; column < 3; column++) {
+        for (int row = 0; row < 3; row++) {
+            if (TTTarray[row][column] == target) {
+                count++;
+            } else
+            if (TTTarray[row][column] == 'O') {
+                countO++;
+            }
+        }
+        // If we hit our target frequency...
+        if (count == num) { 
+            // If we're one-away, just move to the open space.
+            if (num == 2) {
+                for (int row = 0; row < 3; row++) {
+                    if (TTTarray[row][column] == '-'){
+                        TTTarray[row][column] = 'X';
+                        return true;
+                    }
+                }
+            } else 
+           /*
+             * The compound condition on 'num == 1' ensures that we 
+             * don't waste a move on a path that already has an O
+             * blocking it. 
+             * Give X preference to corners
+             */
+            if ((num == 1 && countO == 0) || num == 0) {
+                if (TTTarray[0][column] == '-') {
+                    TTTarray[0][column] = 'X';
+                    return true;
+                } else 
+                if (TTTarray[2][column] == '-') {
+                    TTTarray[2][column] = 'X';
+                    return true;
+                } else
+                if (TTTarray[1][column] == '-') {
+                    TTTarray[1][column] = 'X';
+                    return true;
+                } 
+            }
+        }
+        // Reset the counters on each iteration
+        count = 0;
+        countO = 0;
+    } 
+    return false; 
+}
+
+bool scanHorizontal(char (&TTTarray)[3][3], char target, int num) {
+    int count = 0,  // Counts occurences of the target letter
+        countO = 0; // Always counts O's
+
+    /*
+     * For each row, count the occurences of the target letter.
+     * If this count reaches our EXACT target frequency, place the 
+     * next letter inside the open space in that path.
+     */
+    for (int row = 0; row < 3; row++) {
+
+        for (int column = 0; column < 3; column++) {
+            if (TTTarray[row][column] == target) {
+                count++;
+            } else 
+            if (TTTarray[row][column] == 'O') {
+                countO++;
+            } 
+        }
+        // If we hit our target frequency...
+        if (count == num) {
+            // If we're one-away, just move to the open space.
+            if (num == 2) {
+                for (int column = 0; column < 3; column++) {
+                    if (TTTarray[row][column] == '-') {
+                        TTTarray[row][column] = 'X';
+                        return true;
+                    }
+                }
+            } else 
+            /*
+             * The compound condition on 'num == 1' ensures that we 
+             * don't waste a move on a path that already has an O
+             * blocking it. 
+             * Give X preference to corners.
+             */
+            if ((num == 1 && countO == 0) || num == 0) {
+                if (TTTarray[row][0] == '-') {
+                    TTTarray[row][0] = 'X';
+                    return true;
+                } else 
+                if (TTTarray[row][2] == '-') {
+                    TTTarray[row][2] = 'X';
+                    return true;
+                } else
+                if (TTTarray[row][1] == '-') {
+                    TTTarray[row][1] = 'X';
+                    return true;
+                } 
+            }
+        }
+        // Reset the counts for each iteration
+        count = 0;
+        countO = 0;
+    }
+    return false;
+}
+
+bool scanDiagonal(char (&TTTarray)[3][3], char target, int num) {
+    
+    int count = 0,
+        countO = 0,
+        startRow = 0; // The diagonal's row in the 1st column
+
+    // Scan '\' diagonal 
+    for (int column = 0; column < 3; column++) {
+        if (TTTarray[(startRow+column)][column] == target) {
+            count++;
+        } else 
+        if (TTTarray[(startRow+column)][column] == 'O') {
+            countO++;
+        } 
+        // If target frequency is hit
+        if (count == num) {
+            /*
+             * Weight all target numbers the same since we 
+             * already parsed all the corners.
+             * For all cases, just move to whatever's open.
+             */
+            if (num == 2 || (num == 1 && countO == 0) || num == 0) {
+                for (int column = 0; column < 3; column++) {
+                    if (TTTarray[(startRow+column)][column] == '-') {
+                        TTTarray[(startRow+column)][column] = 'X';
+                        return true;
+                    }
+                }
+            } 
+        } 
+    }
+
+    count = 0;
+    countO = 0;
+    startRow = 2;   // The diagonal's row in the 1st column
+
+    // Scan '/' diagonal 
+    for (int column = 0; column < 3; column++) {
+        if (TTTarray[(startRow-column)][column] == target) {
+            count++;
+        } else
+        if (TTTarray[(startRow-column)][column] == 'O') {
+            countO++;
+        } 
+        // If target frequency is hit
+        if (count == num) {
+            /*
+             * Weight all target numbers the same since we 
+             * already parsed all the corners.
+             * For all cases, just move to whatever's open.
+             */
+            if (num == 2 || (num == 1 && countO == 0) || num == 0) {
+                for (int column = 0; column < 3; column++) {
+                    if (TTTarray[(startRow-column)][column] == '-') {
+                        TTTarray[(startRow-column)][column] = 'X';
+                        return true;
+                    }
+                }
+            } 
+        } 
+    }
+    return false;
+}
+
+bool checkForWin(char (&array)[3][3])
+{
+	int countX, countO;
+	for(int i =0;i<3;i++)
+	{
+		//Row
+		if( (*(&array[0][0]+i)) == 'X')
+		{
+			countX++;
+		}
+		if(countX ==3)
+		{
+			cout<<"X won \n";
+			return true;
+		}
+		
+		if( (*(&array[0][0]+i)) == 'O')
+		{
+			countO++;
+		}
+	}
+	return true;
 }
