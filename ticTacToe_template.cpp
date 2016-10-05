@@ -359,7 +359,8 @@ bool checkForEmpty(char (&TTTarray)[3][3]) {
     return false;
 }
 
-bool scanVertical(char (&TTTarray)[3][3], char target, int num) {
+bool scanVertical(char (&TTTarray)[3][3], char target, int num) 
+{
     int count = 0,  // Counts occurences of the target letter
         countO = 0; // Always counts O's
     
@@ -368,21 +369,28 @@ bool scanVertical(char (&TTTarray)[3][3], char target, int num) {
      * If this count reaches our EXACT target frequency, place the 
      * next letter inside the open space in that path.
      */
-    for (int column = 0; column < 3; column++) {
-        for (int row = 0; row < 3; row++) {
-            if (TTTarray[row][column] == target) {
+    for (int column = 0; column < 3; column++) 
+    {
+        for (int row = 0; row < 3; row++) 
+        {
+            if (TTTarray[row][column] == target) 
+            {
                 count++;
-            } else
-            if (TTTarray[row][column] == 'O') {
+            } else if (TTTarray[row][column] == 'O') 
+            {
                 countO++;
             }
         }
         // If we hit our target frequency...
-        if (count == num) { 
+        if (count == num) 
+        { 
             // If we're one-away, just move to the open space.
-            if (num == 2) {
-                for (int row = 0; row < 3; row++) {
-                    if (TTTarray[row][column] == '-'){
+            if (num == 2) 
+            {
+                for (int row = 0; row < 3; row++) 
+                {
+                    if (TTTarray[row][column] == '-')
+                    {
                         TTTarray[row][column] = 'X';
                         return true;
                     }
@@ -394,16 +402,18 @@ bool scanVertical(char (&TTTarray)[3][3], char target, int num) {
              * blocking it. 
              * Give X preference to corners
              */
-            if ((num == 1 && countO == 0) || num == 0) {
-                if (TTTarray[0][column] == '-') {
+            if ((num == 1 && countO == 0) || num == 0) 
+            {
+                if (TTTarray[0][column] == '-') 
+                {
                     TTTarray[0][column] = 'X';
                     return true;
-                } else 
-                if (TTTarray[2][column] == '-') {
+                } else if (TTTarray[2][column] == '-') 
+                {
                     TTTarray[2][column] = 'X';
                     return true;
-                } else
-                if (TTTarray[1][column] == '-') {
+                } else if (TTTarray[1][column] == '-') 
+                {
                     TTTarray[1][column] = 'X';
                     return true;
                 } 
@@ -416,7 +426,8 @@ bool scanVertical(char (&TTTarray)[3][3], char target, int num) {
     return false; 
 }
 
-bool scanHorizontal(char (&TTTarray)[3][3], char target, int num) {
+bool scanHorizontal(char (&TTTarray)[3][3], char target, int num) 
+{
     int count = 0,  // Counts occurences of the target letter
         countO = 0; // Always counts O's
 
@@ -425,22 +436,28 @@ bool scanHorizontal(char (&TTTarray)[3][3], char target, int num) {
      * If this count reaches our EXACT target frequency, place the 
      * next letter inside the open space in that path.
      */
-    for (int row = 0; row < 3; row++) {
-
-        for (int column = 0; column < 3; column++) {
-            if (TTTarray[row][column] == target) {
+    for (int row = 0; row < 3; row++) 
+    {
+        for (int column = 0; column < 3; column++) 
+        {
+            if (TTTarray[row][column] == target) 
+            {
                 count++;
-            } else 
-            if (TTTarray[row][column] == 'O') {
+            } else if (TTTarray[row][column] == 'O') 
+            {
                 countO++;
             } 
         }
         // If we hit our target frequency...
-        if (count == num) {
+        if (count == num) 
+        {
             // If we're one-away, just move to the open space.
-            if (num == 2) {
-                for (int column = 0; column < 3; column++) {
-                    if (TTTarray[row][column] == '-') {
+            if (num == 2) 
+            {
+                for (int column = 0; column < 3; column++) 
+                {
+                    if (TTTarray[row][column] == '-') 
+                    {
                         TTTarray[row][column] = 'X';
                         return true;
                     }
@@ -452,16 +469,18 @@ bool scanHorizontal(char (&TTTarray)[3][3], char target, int num) {
              * blocking it. 
              * Give X preference to corners.
              */
-            if ((num == 1 && countO == 0) || num == 0) {
-                if (TTTarray[row][0] == '-') {
+            if ((num == 1 && countO == 0) || num == 0) 
+            {
+                if (TTTarray[row][0] == '-') 
+                {
                     TTTarray[row][0] = 'X';
                     return true;
-                } else 
-                if (TTTarray[row][2] == '-') {
+                } else if (TTTarray[row][2] == '-') 
+                {
                     TTTarray[row][2] = 'X';
                     return true;
-                } else
-                if (TTTarray[row][1] == '-') {
+                } else if (TTTarray[row][1] == '-') 
+                {
                     TTTarray[row][1] = 'X';
                     return true;
                 } 
@@ -474,30 +493,37 @@ bool scanHorizontal(char (&TTTarray)[3][3], char target, int num) {
     return false;
 }
 
-bool scanDiagonal(char (&TTTarray)[3][3], char target, int num) {
+bool scanDiagonal(char (&TTTarray)[3][3], char target, int num) 
+{
     
     int count = 0,
         countO = 0,
         startRow = 0; // The diagonal's row in the 1st column
 
     // Scan '\' diagonal 
-    for (int column = 0; column < 3; column++) {
-        if (TTTarray[(startRow+column)][column] == target) {
+    for (int column = 0; column < 3; column++) 
+    {
+        if (TTTarray[(startRow+column)][column] == target) 
+        {
             count++;
-        } else 
-        if (TTTarray[(startRow+column)][column] == 'O') {
+        } else if (TTTarray[(startRow+column)][column] == 'O') 
+        {
             countO++;
         } 
         // If target frequency is hit
-        if (count == num) {
+        if (count == num) 
+        {
             /*
              * Weight all target numbers the same since we 
              * already parsed all the corners.
              * For all cases, just move to whatever's open.
              */
-            if (num == 2 || (num == 1 && countO == 0) || num == 0) {
-                for (int column = 0; column < 3; column++) {
-                    if (TTTarray[(startRow+column)][column] == '-') {
+            if (num == 2 || (num == 1 && countO == 0) || num == 0) 
+            {
+                for (int column = 0; column < 3; column++) 
+                {
+                    if (TTTarray[(startRow+column)][column] == '-') 
+                    {
                         TTTarray[(startRow+column)][column] = 'X';
                         return true;
                     }
@@ -511,23 +537,29 @@ bool scanDiagonal(char (&TTTarray)[3][3], char target, int num) {
     startRow = 2;   // The diagonal's row in the 1st column
 
     // Scan '/' diagonal 
-    for (int column = 0; column < 3; column++) {
-        if (TTTarray[(startRow-column)][column] == target) {
+    for (int column = 0; column < 3; column++) 
+    {
+        if (TTTarray[(startRow-column)][column] == target) 
+        {
             count++;
-        } else
-        if (TTTarray[(startRow-column)][column] == 'O') {
+        } else if (TTTarray[(startRow-column)][column] == 'O') 
+        {
             countO++;
         } 
         // If target frequency is hit
-        if (count == num) {
+        if (count == num) 
+        {
             /*
              * Weight all target numbers the same since we 
              * already parsed all the corners.
              * For all cases, just move to whatever's open.
              */
-            if (num == 2 || (num == 1 && countO == 0) || num == 0) {
-                for (int column = 0; column < 3; column++) {
-                    if (TTTarray[(startRow-column)][column] == '-') {
+            if (num == 2 || (num == 1 && countO == 0) || num == 0) 
+            {
+                for (int column = 0; column < 3; column++) 
+                {
+                    if (TTTarray[(startRow-column)][column] == '-') 
+                    {
                         TTTarray[(startRow-column)][column] = 'X';
                         return true;
                     }
