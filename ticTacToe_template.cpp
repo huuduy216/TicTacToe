@@ -90,7 +90,12 @@ int main( ){
         printTTT(TTTarray);
         cout<<endl;;
         cout<<endl;;
+		if(checkForWin(TTTarray))
+		{
+			return 0;
+		}
     }
+	cout<<"Tie \n";
 
     /*****************
     I have included the declaratoin of the array, initialized to - for each spot.
@@ -583,6 +588,74 @@ bool checkForWin(char (&array)[3][3])
 		{
 			countO++;
 		}
+		if(countO ==3)
+		{
+			cout<<"O won \n";
+			return true;
+		}
+		
+		//Column
+		if( (*(&array[0][0]+3+i)) == 'X')
+		{
+			countX++;
+		}
+		if(countX ==3)
+		{
+			cout<<"X won \n";
+			return true;
+		}
+		
+		if( (*(&array[0][0]+3+i)) == 'O')
+		{
+			countO++;
+		}
+		if(countO ==3)
+		{
+			cout<<"O won \n";
+			return true;
+		}
+	}	
+	//Diagonal lines
+	int count1X, count2X, count1O, count2O;
+	//We need to check [0][0], [1][1], [2][2] AND [0][2], [1][1], [2][0]
+	for(int i =0; i < 3; i++)
+	{
+		//Check [0][0], [1][1], [2][2]
+		if(array[i][i] == 'X')
+		{
+			count1X++;
+		}
+		
+		//Check [0][2], [1][1], [2][0]
+		if(array[0+i][2-i] == 'X')
+		{
+			count2X++;
+		}
+		
+		//Check [0][0], [1][1], [2][2]
+		if(array[i][i] == 'O')
+		{
+			count1X++;
+		}
+		
+		//Check [0][2], [1][1], [2][0]
+		if(array[0+i][2-i] == 'O')
+		{
+			count2X++;
+		}
+		
 	}
-	return true;
+	if(count1X ==3 || count2X == 3)
+	{
+		cout<<"X won \n";
+		return true;
+	}
+	
+	if(count1O ==3 || count2O == 3)
+	{
+		cout<<"O won \n";
+		return true;
+	}
+	return false;
+	
 }
